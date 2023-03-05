@@ -1,0 +1,27 @@
+---
+# defaults file for docker-ansible
+docker_user: root
+plausible_dir: /var/docker/plausible
+plausible_stack_name: plausible
+plausible_url: "plausible.{{ inventory_hostname }}"
+plausible_db_password: postgres
+plausible_secret_key: replace-me
+plausible_disable_registration: invite_only
+plausible_mail: "plausible@{{ inventory_hostname }}"
+plausible_use_smtp: false
+# plausible_smtp_host:
+# plausible_smtp_port:
+# plausible_smtp_user:
+# plausible_smtp_pwd:
+plausible_smtp_ssl: true
+
+plausible_pull_images: false
+plausible_state: present
+plausible_recreate: smart
+plausible_remove_volumes: false # !! deletes data if true !!
+
+plausible_use_googlesearchintegration: false
+# plausible_google_client_id:
+# plausible_google_client_secret:
+
+plausible_use_traefik: false

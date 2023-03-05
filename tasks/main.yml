@@ -1,0 +1,71 @@
+---
+# tasks file for docker-ansible
+
+- name: Ensure Plausible is installed and running.
+  when: (install_plausible is defined) and install_plausible
+  block:
+    - name: Ensure Plausible dir exists.
+      ansible.builtin.file:
+        path: "{{ plausible_dir }}"
+        state: directory
+        owner: "{{ docker_user }}"
+        group: docker
+        mode: "0660"
+
+    - name: Clickhouse config.
+      block:
+        - name: Ensure Plausible dir exists.
+          ansible.builtin.file:
+            path: "{{ plausible_dir }}/clickhouse/"
+            state: directory
+            owner: "{{ docker_user }}"
+            group: docker
+            mode: "0664"
+        - name: Copy Clickhouse configuration files.
+          ansible.builtin.copy:
+            src: "{{ item }}"
+            dest: "{{ plausible_dir }}/clickhouse/{{ item }}"
+            force: true
+            owner: "{{ docker_user }}"
+            group: docker
+            mode: "0664"
+          with_items:
+            - clickhouse-config.xml
+            - clickhouse-user-config.xml
+
+    - name: Copy docker compose and environment files.
+      ansible.builtin.template:
+        src: "{{ item }}.j2"
+        dest: "{{ plausible_dir }}/{{ item }}"
+        owner: "{{ docker_user }}"
+        group: docker
+        mode: "0660"
+      with_items:
+        - docker-compose.yml
+        - plausible-conf.env
+
+    - name: Ensure docker-compose stack is running.
+      community.docker.docker_compose:
+        project_name: "{{ plausible_stack_name }}"
+        project_src: "{{ plausible_dir }}"
+        pull: "{{ plausible_pull_images }}"
+        recreate: "{{ plausible_recreate }}"
+        state: "{{ plausible_state }}"
+        remove_volumes: "{{ plausible_remove_volumes }}"
+        remove_orphans: true
+
+- name: Ensure Plausible is NOT running and uninstalled.
+  when: (install_plausible is defined) and not install_plausible
+  block:
+    - name: Ensure docker-compose stack is down.
+      community.docker.docker_compose:
+        project_name: "{{ plausible_stack_name }}"
+        project_src: "{{ plausible_dir }}"
+        state: absent
+        remove_volumes: "{{ plausible_remove_volumes }}"
+        remove_orphans: true
+
+    - name: Ensure Plausible is removed.
+      ansible.builtin.file:
+        path: "{{ plausible_dir }}"
+        state: absent

@@ -1,0 +1,23 @@
+galaxy_info:
+  author: Sebastian Buck
+  description: Installs Plausible Web Analytics on a Docker host.
+  company: platomo
+
+  license: GPL-3.0-only
+
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+  galaxy_tags:
+    - docker
+    - installs
+    - infrastructure
+    - analytics
+    - web
+
+dependencies: []
