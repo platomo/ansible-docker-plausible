@@ -1,5 +1,6 @@
 ---
 # defaults file for docker-ansible
+plausible_version: v1.5.0
 docker_user: root
 plausible_dir: /var/docker/plausible
 plausible_stack_name: plausible
